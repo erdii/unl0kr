@@ -23,6 +23,7 @@ Source1:        unl0kr-dracut-module-setup.sh
 Source2:        unl0kr-ask-password.sh
 Source3:        unl0kr-ask-password.path
 Source4:        unl0kr-ask-password.service
+Source5:        unl0kr.conf
 
 # Disable debug packages
 %define debug_package %{nil}
@@ -42,6 +43,8 @@ Provides a Dracut module that will ask for password with an on-screen-keyboard
 git clone https://gitlab.com/cherrypicker/unl0kr.git
 cd unl0kr
 git submodule update --init --recursive
+rm unl0kr.conf
+cp %{SOURCE5} unl0kr.conf
 
 %build
 cd unl0kr
