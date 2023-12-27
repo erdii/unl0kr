@@ -25,6 +25,8 @@ Source3:        unl0kr-ask-password.path
 Source4:        unl0kr-ask-password.service
 Source5:        unl0kr.conf
 
+Patch0:         0001-Remove-newline-from-password-output.patch
+
 # Disable debug packages
 %define debug_package %{nil}
 
@@ -40,9 +42,10 @@ Requires: dracut
 Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
-git clone https://gitlab.com/cherrypicker/unl0kr.git
+git clone %{url}.git
 cd unl0kr
 git submodule update --init --recursive
+%patch 0 -p1
 rm unl0kr.conf
 cp %{SOURCE5} unl0kr.conf
 

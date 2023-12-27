@@ -24,10 +24,12 @@ install() {
          /usr/lib*/libEGL*.so* \
          /usr/lib*/libGLES*.so* \
          /usr/lib/udev/rules.d/* \
+         /etc/udev/rules.d/* \
          /usr/share/glvnd/egl_vendor.d/50_mesa.json \
          /usr/share/libinput/* \
          /usr/share/X11/xkb/* \
-         unl0kr \
+         /usr/bin/unl0kr \
+         /usr/bin/udevadm \
          cut
     inst_simple "$moddir/unl0kr-ask-password.sh" /usr/bin/unl0kr-ask-password
     
