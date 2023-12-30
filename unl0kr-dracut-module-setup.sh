@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 check() {
-    require_binaries unl0kr || return 1
-    
+    require_binaries unl0kr udevadm || return 1
+
     return 255
 }
 
@@ -18,24 +18,18 @@ install() {
          $systemdsystemunitdir/sysinit.target.wants/unl0kr-ask-password.path \
          /lib/systemd/systemd-reply-password \
          /etc/unl0kr.conf \
-         /usr/lib*/dri/* \
-         /usr/lib*/libdrm.so* \
-         /usr/lib*/libgbm.so* \
-         /usr/lib*/libEGL*.so* \
-         /usr/lib*/libGLES*.so* \
-         /usr/lib/udev/rules.d/* \
+         /etc/unl0kr.conf.d/* \
+         /lib/udev/rules.d/* \
          /etc/udev/rules.d/* \
-         /usr/share/glvnd/egl_vendor.d/50_mesa.json \
-         /usr/share/libinput/* \
+         /usr/share/libinput/*.quirks \
          /usr/share/X11/xkb/* \
-         /usr/bin/unl0kr \
-         /usr/bin/udevadm \
+         /bin/unl0kr \
+         /bin/udevadm \
          cut
     inst_simple "$moddir/unl0kr-ask-password.sh" /usr/bin/unl0kr-ask-password
-    
+
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-console.service || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-plymouth.service || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-console.path || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-plymouth.path || :
 }
-
