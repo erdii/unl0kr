@@ -5,7 +5,7 @@ Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Framebuffer-based disk unlocker for the initramfs based on LVGL 
 License:        GPLv3
-URL:            https://gitlab.com/cherrypicker/unl0kr
+URL:            https://gitlab.com/postmarketOS/buffybox
 
 BuildRequires:  git
 BuildRequires:  systemd-rpm-macros
@@ -43,20 +43,21 @@ Requires: dracut
 Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
-git clone %{url}.git
-cd unl0kr
+git clone %{url}.git --single-branch
+cd buffybox
 git submodule update --init --recursive
+cd unl0kr
 %patch 0 -p1
 rm unl0kr.conf
 cp %{SOURCE5} unl0kr.conf
 
 %build
-cd unl0kr
+cd buffybox/unl0kr
 %meson
 %meson_build
 
 %install
-cd unl0kr
+cd buffybox/unl0kr
 %meson_install
 mkdir -p %{buildroot}%{dracutlibdir}/modules.d/10unl0kr
 install -p -m 0644 %{SOURCE1} %{buildroot}%{dracutlibdir}/modules.d/10unl0kr/module-setup.sh
@@ -73,7 +74,7 @@ cp %{SOURCE6} %{buildroot}%{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
-%license unl0kr/COPYING
+%license buffybox/unl0kr/COPYING
 %{_bindir}/unl0kr
 %{_sysconfdir}/unl0kr.conf
 %{_sysconfdir}/unl0kr.conf.d/*
