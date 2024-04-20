@@ -7,6 +7,7 @@ check() {
     return 255
 }
 
+# called by dracut
 depends() {
     return 0
 }
@@ -21,13 +22,23 @@ install() {
          /etc/unl0kr.conf.d/* \
          /lib/udev/rules.d/* \
          /etc/udev/rules.d/* \
-         /usr/share/libinput/*.quirks \
-         /usr/share/X11/xkb/* \
+         /etc/libinput/* \
+         /etc/xkb/* \
          /bin/unl0kr \
          /bin/udevadm \
+         /bin/grep \
          cut
+
+    for file in $(find /usr/share/libinput* -name '*.quirks'; find /usr/share/X11/xkb); do
+      inst "$file"
+    done
+
     inst_simple "$moddir/unl0kr-ask-password.sh" /usr/bin/unl0kr-ask-password
 
+    # Enable the systemd service unit for unl0kr-ask-password.
+    $SYSTEMCTL -q --root "$initdir" add-wants unl0kr-ask-password.service systemd-vconsole-setup.service
+
+    # Disable conflicting services
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-console.service || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-plymouth.service || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-console.path || :
