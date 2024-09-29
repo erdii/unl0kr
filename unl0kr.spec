@@ -46,7 +46,7 @@ Requires: dracut
 Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
-%setup
+%setup -n buffybox-%{version}
 cd buffybox-%{version}/unl0kr
 cp %{SOURCE5} unl0kr.conf
 
