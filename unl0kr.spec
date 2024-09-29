@@ -47,16 +47,16 @@ Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
 %setup -n buffybox-%{version}
-cd buffybox-%{version}/unl0kr
+cd unl0kr
 cp %{SOURCE5} unl0kr.conf
 
 %build
-cd buffybox-%{version}/unl0kr
+cd unl0kr
 %meson
 %meson_build
 
 %install
-cd buffybox-%{version}/unl0kr
+cd unl0kr
 %meson_install
 mkdir -p %{buildroot}%{dracutlibdir}/modules.d/10unl0kr
 install -p -m 0644 %{SOURCE1} %{buildroot}%{dracutlibdir}/modules.d/10unl0kr/module-setup.sh
