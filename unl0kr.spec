@@ -1,16 +1,17 @@
 %define dracutlibdir %{_prefix}/lib/dracut
 
 Name:           unl0kr
-Version:        {{{ git_dir_version }}}
+Version:        3.2.0
 Release:        1%{?dist}
 Summary:        Framebuffer-based disk unlocker for the initramfs based on LVGL 
 License:        GPLv3
-URL:            https://gitlab.com/cherrypicker/unl0kr
+URL:            https://gitlab.com/postmarketOS/buffybox
 
 BuildRequires:  git
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  gcc
-BuildRequires:  meson >= 0.54.0
+BuildRequires:  wget
+BuildRequires:  meson >= 0.55.0
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(inih)
 BuildRequires:  pkgconfig(libinput)
@@ -26,7 +27,7 @@ Source4:        unl0kr-ask-password.service
 Source5:        unl0kr.conf
 Source6:        10-unl0kr.conf
 
-Patch0:         0001-Remove-newline-from-password-output.patch
+# Patch0:         0001-Remove-newline-from-password-output.patch
 
 # Disable debug packages
 %define debug_package %{nil}
@@ -43,20 +44,18 @@ Requires: dracut
 Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
-git clone %{url}.git
-cd unl0kr
-git submodule update --init --recursive
-%patch 0 -p1
-rm unl0kr.conf
+wget -O buffybox.tar.gz https://gitlab.com/-/project/52322952/uploads/88ff83972a3c19d16d9d2560bfae8a7e/buffybox-%{version}.tar.gz
+tar xavf buffybox.tar.gz
+cd buffybox-%{version}/unl0kr
 cp %{SOURCE5} unl0kr.conf
 
 %build
-cd unl0kr
+cd buffybox-%{version}/unl0kr
 %meson
 %meson_build
 
 %install
-cd unl0kr
+cd buffybox-%{version}/unl0kr
 %meson_install
 mkdir -p %{buildroot}%{dracutlibdir}/modules.d/10unl0kr
 install -p -m 0644 %{SOURCE1} %{buildroot}%{dracutlibdir}/modules.d/10unl0kr/module-setup.sh
@@ -73,7 +72,7 @@ cp %{SOURCE6} %{buildroot}%{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
-%license unl0kr/COPYING
+%license buffybox-%{version}/COPYING
 %{_bindir}/unl0kr
 %{_sysconfdir}/unl0kr.conf
 %{_sysconfdir}/unl0kr.conf.d/*
@@ -89,4 +88,3 @@ cp %{SOURCE6} %{buildroot}%{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
 %changelog
-{{{ git_dir_changelog }}}
