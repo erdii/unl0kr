@@ -20,6 +20,8 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(scdoc)
 
+# curl https://gitlab.com/api/v4/projects/52322952/releases | jq '.[0].assets.links[0].direct_asset_url'
+Source0:        https://gitlab.com/-/project/52322952/uploads/88ff83972a3c19d16d9d2560bfae8a7e/buffybox-3.2.0.tar.gz
 Source1:        unl0kr-dracut-module-setup.sh
 Source2:        unl0kr-ask-password.sh
 Source3:        unl0kr-ask-password.path
@@ -44,8 +46,7 @@ Requires: dracut
 Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
-wget -O buffybox.tar.gz https://gitlab.com/-/project/52322952/uploads/88ff83972a3c19d16d9d2560bfae8a7e/buffybox-%{version}.tar.gz
-tar xavf buffybox.tar.gz
+%setup
 cd buffybox-%{version}/unl0kr
 cp %{SOURCE5} unl0kr.conf
 
