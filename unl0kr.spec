@@ -73,7 +73,7 @@ cp %{SOURCE6} %{buildroot}%{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
-%license buffybox-%{version}/COPYING
+%license COPYING
 %{_bindir}/unl0kr
 %{_sysconfdir}/unl0kr.conf
 %{_sysconfdir}/unl0kr.conf.d/*
