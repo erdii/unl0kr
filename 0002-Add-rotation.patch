@@ -1,0 +1,135 @@
+diff --color -urN buffy-master/buffyboard/config.c buffy-config-rotation/buffyboard/config.c
+--- buffy-master/buffyboard/config.c	2024-09-30 11:05:38.768691684 +0200
++++ buffy-config-rotation/buffyboard/config.c	2024-09-30 15:42:45.301795756 +0200
+@@ -80,6 +80,7 @@
+     opts->input.pointer = true;
+     opts->input.touchscreen = true;
+     opts->quirks.fbdev_force_refresh = false;
++    opts->quirks.rotation = 0; /* default to 0 (normal) */
+ }
+ 
+ void bb_config_parse_directory(const char *path, bb_config_opts *opts) {
+diff --color -urN buffy-master/buffyboard/config.h buffy-config-rotation/buffyboard/config.h
+--- buffy-master/buffyboard/config.h	2024-09-30 11:05:38.768691684 +0200
++++ buffy-config-rotation/buffyboard/config.h	2024-09-30 15:42:45.301795756 +0200
+@@ -35,6 +35,8 @@
+ typedef struct {
+     /* If true and using the framebuffer backend, force a refresh on every draw operation */
+     bool fbdev_force_refresh;
++    /* Force rotation orientation for display */
++    int rotation;
+ } bb_config_opts_quirks;
+ 
+ /**
+diff --color -urN buffy-master/buffyboard/main.c buffy-config-rotation/buffyboard/main.c
+--- buffy-master/buffyboard/main.c	2024-09-30 11:05:38.768691684 +0200
++++ buffy-config-rotation/buffyboard/main.c	2024-09-30 15:42:45.301795756 +0200
+@@ -234,6 +234,17 @@
+         lv_display_set_dpi(disp, cli_opts.dpi);
+     }
+ 
++    // FIXME: There's a bug here, the order should be: config file options are
++    // overridden by explicit cli options. In this case we always prefer the
++    // value from the config file, going against expectations and basically
++    // breaking the cli option in some cases.
++    // This is done because we don't actually know at this point if the cli
++    // option we have is just from being the default (i.e user didn't pass cli
++    // flag), or if they explicitly passed it via a flag.
++    if (conf_opts.quirks.rotation > 0) {
++        cli_opts.rotation = conf_opts.quirks.rotation;
++    }
++
+     /* Set up display rotation */
+     int32_t hor_res_phys = lv_display_get_horizontal_resolution(disp);
+     int32_t ver_res_phys = lv_display_get_vertical_resolution(disp);
+diff --color -urN buffy-master/unl0kr/command_line.c buffy-config-rotation/unl0kr/command_line.c
+--- buffy-master/unl0kr/command_line.c	2024-09-30 11:05:38.778691810 +0200
++++ buffy-config-rotation/unl0kr/command_line.c	2024-09-30 15:42:44.658455205 +0200
+@@ -44,6 +44,7 @@
+     opts->x_offset = 0;
+     opts->y_offset = 0;
+     opts->dpi = 0;
++    opts->rotation = LV_DISPLAY_ROTATION_0;
+     opts->verbose = false;
+ }
+ 
+@@ -68,6 +69,13 @@
+         "                            vertical pixels, offset horizontally by X\n"
+         "                            pixels and vertically by Y pixels\n"
+         "  -d  --dpi=N               Override the display's DPI value\n"
++        "  -r, --rotate=[0-3]        Rotate the UI to the given orientation. The\n"
++        "                            values match the ones provided by the kernel in\n"
++        "                            /sys/class/graphics/fbcon/rotate.\n"
++        "                            * 0 - normal orientation (0 degree)\n"
++        "                            * 1 - clockwise orientation (90 degrees)\n"
++        "                            * 2 - upside down orientation (180 degrees)\n"
++        "                            * 3 - counterclockwise orientation (270 degrees)\n"
+         "  -h, --help                Print this message and exit\n"
+         "  -v, --verbose             Enable more detailed logging output on STDERR\n"
+         "  -V, --version             Print the unl0kr version and exit\n");
+@@ -86,6 +94,7 @@
+         { "config-override", required_argument, NULL, 'C' },
+         { "geometry",        required_argument, NULL, 'g' },
+         { "dpi",             required_argument, NULL, 'd' },
++        { "rotate",          required_argument, NULL, 'r' },
+         { "help",            no_argument,       NULL, 'h' },
+         { "verbose",         no_argument,       NULL, 'v' },
+         { "version",         no_argument,       NULL, 'V' },
+@@ -94,7 +103,7 @@
+ 
+     int opt, index = 0;
+ 
+-    while ((opt = getopt_long(argc, argv, "C:g:d:hvV", long_opts, &index)) != -1) {
++    while ((opt = getopt_long(argc, argv, "C:g:d:r:hvV", long_opts, &index)) != -1) {
+         switch (opt) {
+         case 'C':
+             opts->config_files = realloc(opts->config_files, (opts->num_config_files + 1) * sizeof(char *));
+@@ -119,6 +128,28 @@
+                 exit(EXIT_FAILURE);
+             }
+             break;
++        case 'r': {
++            int orientation;
++            if (sscanf(optarg, "%i", &orientation) != 1 || orientation < 0 || orientation > 3) {
++                fprintf(stderr, "Invalid orientation argument \"%s\"\n", optarg);
++                exit(EXIT_FAILURE);
++            }
++            switch (orientation) {
++                case 0:
++                    opts->rotation = LV_DISPLAY_ROTATION_0;
++                    break;
++                case 1:
++                    opts->rotation = LV_DISPLAY_ROTATION_270;
++                    break;
++                case 2:
++                    opts->rotation = LV_DISPLAY_ROTATION_180;
++                    break;
++                case 3:
++                    opts->rotation = LV_DISPLAY_ROTATION_90;
++                    break;
++            }
++            break;
++        }
+         case 'h':
+             print_usage();
+             exit(EXIT_SUCCESS);
+diff --color -urN buffy-master/unl0kr/command_line.h buffy-config-rotation/unl0kr/command_line.h
+--- buffy-master/unl0kr/command_line.h	2024-09-30 11:05:38.778691810 +0200
++++ buffy-config-rotation/unl0kr/command_line.h	2024-09-30 15:42:44.658455205 +0200
+@@ -7,6 +7,7 @@
+ #ifndef UL_COMMAND_LINE_H
+ #define UL_COMMAND_LINE_H
+ 
++#include "lvgl/lvgl.h"
+ #include <stdbool.h>
+ 
+ /**
+@@ -27,6 +28,8 @@
+     int y_offset;
+     /* DPI */
+     int dpi;
++    /* Display rotation */
++    lv_display_rotation_t rotation;
+     /* Verbose mode. If true, provide more detailed logging output on STDERR. */
+     bool verbose;
+ } ul_cli_opts;

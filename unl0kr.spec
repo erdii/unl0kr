@@ -30,6 +30,9 @@ Source5:        unl0kr.conf
 Source6:        10-unl0kr.conf
 
 Patch0:         0000-Fix-card-path.patch
+# https://gitlab.com/postmarketOS/buffybox/-/merge_requests/22
+# https://gitlab.com/postmarketOS/buffybox/-/issues/14
+Patch1:         0002-Add-rotation.patch
 # Patch0:         0001-Remove-newline-from-password-output.patch
 
 # Disable debug packages
@@ -49,6 +52,7 @@ Provides a Dracut module that will ask for password with an on-screen-keyboard
 %prep
 %setup -n buffybox-%{version}
 %patch0 -p1
+%patch1 -p1
 cd unl0kr
 cp %{SOURCE5} unl0kr.conf
 
