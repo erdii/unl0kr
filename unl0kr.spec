@@ -29,6 +29,7 @@ Source4:        unl0kr-ask-password.service
 Source5:        unl0kr.conf
 Source6:        10-unl0kr.conf
 
+Patch0:         0000-Fix-card-path.patch
 # Patch0:         0001-Remove-newline-from-password-output.patch
 
 # Disable debug packages
@@ -47,6 +48,7 @@ Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
 %setup -n buffybox-%{version}
+%patch0 -p1
 cd unl0kr
 cp %{SOURCE5} unl0kr.conf
 

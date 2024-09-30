@@ -1,0 +1,28 @@
+From 20eba1c82a085678a5adb66bd39d70e2b3c8e216 Mon Sep 17 00:00:00 2001
+From: undef <gitlab@undef.tools>
+Date: Mon, 30 Sep 2024 08:34:04 +0000
+Subject: Fix card device path.
+Forwarded: not-needed
+
+My booted bazzite doesn't have  /dev/dri/card0 but I want
+to test this package.
+
+This patch breaks the equivilent functionality in postmarketOS and
+thus will not be applied upstream.
+---
+ main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: unl0kr/main.c
+===================================================================
+--- buffy-master/unl0kr/main.c  2024-09-30 11:05:38.778691810 +0200
++++ buffybox/unl0kr/main.c      2024-09-30 11:00:18.230946701 +0200
+@@ -420,7 +420,7 @@
+     case UL_BACKENDS_BACKEND_DRM:
+         bbx_log(BBX_LOG_LEVEL_VERBOSE, "Using DRM backend");
+         disp = lv_linux_drm_create();
+-        lv_linux_drm_set_file(disp, "/dev/dri/card0", -1);
++        lv_linux_drm_set_file(disp, "/dev/dri/card1", -1);
+         break;
+ #endif /* LV_USE_LINUX_DRM */
+     default:
