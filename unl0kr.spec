@@ -2,7 +2,7 @@
 
 Name:           unl0kr
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Framebuffer-based disk unlocker for the initramfs based on LVGL 
 License:        GPLv3
 URL:            https://gitlab.com/postmarketOS/buffybox
