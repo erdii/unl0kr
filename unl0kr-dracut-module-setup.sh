@@ -25,15 +25,12 @@ install() {
          /etc/libinput/* \
          /etc/xkb/* \
          /bin/unl0kr \
-         /bin/udevadm \
-         /bin/grep \
-         cut
+         /bin/systemd-ask-password-wrapper \
+         /bin/udevadm
 
     for file in $(find /usr/share/libinput* -name '*.quirks'; find /usr/share/X11/xkb); do
       inst "$file"
     done
-
-    inst_simple "$moddir/unl0kr-ask-password.sh" /usr/bin/unl0kr-ask-password
 
     # Enable the systemd service unit for unl0kr-ask-password.
     $SYSTEMCTL -q --root "$initdir" add-wants unl0kr-ask-password.service systemd-vconsole-setup.service

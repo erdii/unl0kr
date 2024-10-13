@@ -18,15 +18,15 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(scdoc)
+BuildRequires:  golang
 
 Source1:        unl0kr-dracut-module-setup.sh
-Source2:        unl0kr-ask-password.sh
 Source3:        unl0kr-ask-password.path
 Source4:        unl0kr-ask-password.service
 Source5:        unl0kr.conf
 Source6:        10-unl0kr.conf
 
-Patch0:         0001-Remove-newline-from-password-output.patch
+Patch0:         0001-Fix-drm-device.patch
 
 # Disable debug packages
 %define debug_package %{nil}
@@ -44,23 +44,33 @@ Provides a Dracut module that will ask for password with an on-screen-keyboard
 
 %prep
 git clone %{url}.git
-cd unl0kr
+pushd unl0kr
 git submodule update --init --recursive
 %patch 0 -p1
 rm unl0kr.conf
 cp %{SOURCE5} unl0kr.conf
+popd
+
+git clone https://github.com/erdii/systemd-ask-password-wrapper
+pushd systemd-ask-password-wrapper
+go mod download
+popd
 
 %build
-cd unl0kr
+pushd unl0kr
 %meson
 %meson_build
+popd
+
+pushd systemd-ask-password-wrapper
+go build -o systemd-ask-password-wrapper ./cmd/systemd-ask-password-wrapper
+popd
 
 %install
-cd unl0kr
+pushd unl0kr
 %meson_install
 mkdir -p %{buildroot}%{dracutlibdir}/modules.d/10unl0kr
 install -p -m 0644 %{SOURCE1} %{buildroot}%{dracutlibdir}/modules.d/10unl0kr/module-setup.sh
-install -p -m 0755 %{SOURCE2} %{buildroot}%{dracutlibdir}/modules.d/10unl0kr/unl0kr-ask-password.sh
 mkdir -p %{buildroot}%{_unitdir}/sysinit.target.wants
 install -p -m 0755 %{SOURCE3} %{buildroot}%{_unitdir}/unl0kr-ask-password.path
 install -p -m 0755 %{SOURCE4} %{buildroot}%{_unitdir}/unl0kr-ask-password.service
@@ -69,6 +79,11 @@ mkdir -p %{buildroot}%{_sysconfdir}/unl0kr.conf.d/
 touch %{buildroot}%{_sysconfdir}/unl0kr.conf.d/dummy
 mkdir -p %{buildroot}%{dracutlibdir}/dracut.conf.d/
 cp %{SOURCE6} %{buildroot}%{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
+popd
+
+pushd systemd-ask-password-wrapper
+install -p -m 0755 systemd-ask-password-wrapper %{buildroot}%{_bindir}/systemd-ask-password-wrapper
+popd
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
@@ -80,6 +95,7 @@ cp %{SOURCE6} %{buildroot}%{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
 %{_mandir}/man*/unl0kr.*
 
 %files dracut
+%{_bindir}/systemd-ask-password-wrapper
 %{dracutlibdir}/modules.d/10unl0kr
 %{dracutlibdir}/dracut.conf.d/10-unl0kr.conf
 %{_unitdir}/unl0kr-ask-password.path
