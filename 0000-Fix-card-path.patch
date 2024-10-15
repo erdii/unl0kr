@@ -1,0 +1,20 @@
+From 20eba1c82a085678a5adb66bd39d70e2b3c8e216 Mon Sep 17 00:00:00 2001
+From: undef <gitlab@undef.tools>
+Date: Mon, 30 Sep 2024 08:34:04 +0000
+Subject: Fix card device path.
+Forwarded: not-needed
+
+My booted bazzite doesn't have /dev/dri/card0 but I want
+to test this package.
+---
+--- lv_drv_conf.h.orig	2024-10-13 08:23:37.484870035 +0000
++++ unl0kr/lv_drv_conf.h	2024-10-13 08:24:14.798894999 +0000
+@@ -309,7 +309,7 @@
+ #endif
+ 
+ #if USE_DRM
+-#  define DRM_CARD          "/dev/dri/card0"
++#  define DRM_CARD          "/dev/dri/card1"
+ #  define DRM_CONNECTOR_ID  -1	/* -1 for the first connected one */
+ #endif
+ 

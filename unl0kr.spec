@@ -1,7 +1,8 @@
 %define dracutlibdir %{_prefix}/lib/dracut
 
 Name:           unl0kr
-Version:        {{{ git_dir_version }}}
+Version:        2.0.3
+# {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Framebuffer-based disk unlocker for the initramfs based on LVGL 
 License:        GPLv3
@@ -26,7 +27,7 @@ Source4:        unl0kr-ask-password.service
 Source5:        unl0kr.conf
 Source6:        10-unl0kr.conf
 
-Patch0:         0001-Fix-drm-device.patch
+Patch0:         0000-Fix-card-path.patch
 
 # Disable debug packages
 %define debug_package %{nil}
