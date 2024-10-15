@@ -1,8 +1,7 @@
 %define dracutlibdir %{_prefix}/lib/dracut
 
 Name:           unl0kr
-Version:        2.0.3
-# {{{ git_dir_version }}}
+Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Framebuffer-based disk unlocker for the initramfs based on LVGL 
 License:        GPLv3
