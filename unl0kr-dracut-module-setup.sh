@@ -40,4 +40,5 @@ install() {
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-plymouth.service || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-console.path || :
     $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-plymouth.path || :
+    $SYSTEMCTL -q --root "$initdir" mask systemd-ask-password-wall.path || :
 }

@@ -4,8 +4,7 @@ Date: Mon, 30 Sep 2024 08:34:04 +0000
 Subject: Fix card device path.
 Forwarded: not-needed
 
-My booted bazzite doesn't have /dev/dri/card0 but I want
-to test this package.
+Bazzite on my steam deck only has /dev/dri/card1.
 ---
 --- lv_drv_conf.h.orig	2024-10-13 08:23:37.484870035 +0000
 +++ unl0kr/lv_drv_conf.h	2024-10-13 08:24:14.798894999 +0000

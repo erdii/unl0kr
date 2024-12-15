@@ -72,8 +72,8 @@ pushd unl0kr
 mkdir -p %{buildroot}%{dracutlibdir}/modules.d/10unl0kr
 install -p -m 0644 %{SOURCE1} %{buildroot}%{dracutlibdir}/modules.d/10unl0kr/module-setup.sh
 mkdir -p %{buildroot}%{_unitdir}/sysinit.target.wants
-install -p -m 0755 %{SOURCE3} %{buildroot}%{_unitdir}/unl0kr-ask-password.path
-install -p -m 0755 %{SOURCE4} %{buildroot}%{_unitdir}/unl0kr-ask-password.service
+install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/unl0kr-ask-password.path
+install -p -m 0644 %{SOURCE4} %{buildroot}%{_unitdir}/unl0kr-ask-password.service
 ln -s ../unl0kr-ask-password.path %{buildroot}%{_unitdir}/sysinit.target.wants/
 mkdir -p %{buildroot}%{_sysconfdir}/unl0kr.conf.d/
 touch %{buildroot}%{_sysconfdir}/unl0kr.conf.d/dummy
